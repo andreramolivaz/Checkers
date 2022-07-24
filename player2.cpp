@@ -756,8 +756,77 @@ void Player::move(){
 }
 bool Player::valid_move() const{
     std::cout << "valid_move called" << std::endl;
+    bool res = false;
+    Impl* temp = this->pimpl;
+    int last_index=-1;
+    while (temp->next) {
+        last_index = temp->index;
+        temp=temp->next;
+    }
+    if(last_index+1<2)
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: empty history"};
+    Player::piece** before = initialize_board();
+    Player::piece** after = initialize_board();
+    Player::piece** copy = initialize_board();
+    Move* moves_x;
+    Move* moves_o;
 
-    return true;
+    temp = this->pimpl;
+    Impl* temp0 = this -> pimpl;
+
+    while (temp->next->next){
+        temp=temp->next;
+    }
+    temp0 = temp;
+    temp = temp->next;
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            before[i][j] = temp0->board[i][j];
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            after[i][j] = temp->board[i][j];
+
+    if(are_board_equals(after, before)) {
+        delete_board(before);
+        delete_board(after);
+        delete_board(copy);
+        std::cout << "valid_move ended" << std::endl;
+        return false;
+    }
+
+
+    //controllo le mosse del player 1
+    moves_x = get_all_moves(before, Player::piece::x, 1);
+
+    for(int i = 0; ((i < 40) && (moves_x[i].piece_moving != Player::piece::e)); i++) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                copy[i][j] = before[i][j];
+        if(are_board_equals(after, create_board(copy, moves_x[i])))
+            res = true;
+    }
+
+    //controllo le mosse del player 2
+    moves_o = get_all_moves(before, Player::piece::o, -1);
+
+    for(int i = 0; ((i < 40) && (moves_o[i].piece_moving != Player::piece::e) && (!res)); i++) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                copy[i][j] = before[i][j];
+        if(are_board_equals(after, create_board(copy, moves_o[i])))
+            res = true;
+    }
+
+    delete_board(before);
+    delete_board(after);
+    delete_board(copy);
+    delete[] moves_x;
+    delete[] moves_o;
+    std::cout << "valid_move ended" << std::endl;
+    return res;
+
 }
 void Player::pop(){
     std::cout << "pop called" << std::endl;
@@ -818,7 +887,7 @@ int Player::recurrence() const{
         temp=temp->next;
     }
 
-    //std::cout << "recurrence ended" << std::endl;
+    std::cout << "recurrence ended" << std::endl;
     return count+1;
 }
 
