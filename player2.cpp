@@ -908,7 +908,7 @@ bool Player::loses(int player_nr) const {
 bool Player::loses() const {
 
 
-    return false;
+    return true;
 }
 
 int Player::recurrence() const{
