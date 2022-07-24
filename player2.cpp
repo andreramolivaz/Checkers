@@ -929,7 +929,7 @@ int Player::recurrence() const{
         temp=temp->next;
     }
 
-    std::cout << "recurrence ended" << std::endl;
+    //std::cout << "recurrence ended" << std::endl;
     return count+1;
 }
 
