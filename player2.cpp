@@ -34,6 +34,14 @@ Player::piece to_piece(char c){
     return Player::piece::e;
 }
 
+int get_pieces_left (Player::piece** board, Player::piece p[2]){
+    int res=0;
+     for (int i=0; i < 8; i++)
+         for (int j=0; j < 8; j++)
+             if(board[i][j]==p[0] || board[i][j]==p[1] )res++;
+    return res;
+}
+
 struct Move {
     std::pair<int, int> start;
     std::pair<int, int> finish;
@@ -754,6 +762,7 @@ void Player::move(){
     std::cout << "move ended" << std::endl;
 
 }
+
 bool Player::valid_move() const{
     std::cout << "valid_move called" << std::endl;
     bool res = false;
@@ -828,6 +837,7 @@ bool Player::valid_move() const{
     return res;
 
 }
+
 void Player::pop(){
     std::cout << "pop called" << std::endl;
     if(!this->pimpl->board)
@@ -853,22 +863,54 @@ void Player::pop(){
     std::cout << "pop ended" << std::endl;
 }
 
-bool Player::wins(int player_nr) const{
-    std::cout << "wins called" << std::endl;
-    return true;
+bool Player::wins(int player_nr) const {
+
+    Impl* temp = this->pimpl;
+    int last_index=-1;
+    while (temp->next) {
+        last_index = temp->index;
+        temp=temp->next;
+    }
+
+
+    if(last_index+1==0 || ((player_nr != 1) && (player_nr != 2)))
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: invalid player number or empty history"};
+
+    bool res;
+    Player::piece player[2];
+    if(temp->player_nr == 2){
+        player[0] = x;
+        player [1] = X;
+    }
+    else {
+        player[0] = o;
+        player[1]=O;
+    }
+
+   if(get_pieces_left(temp->board, player)==0) return true;
+   else return false;
 }
-bool Player::wins() const{
-    std::cout << "wins called" << std::endl;
-    return true;
+
+bool Player::wins() const {
+
+return false;
 }
-bool Player::loses(int player_nr) const{
-    std::cout << "loses called" << std::endl;
-    return true;
+
+bool Player::loses(int player_nr) const {
+
+
+    bool res;
+
+
+    return res;
 }
-bool Player::loses() const{
-    std::cout << "loses called" << std::endl;
-    return true;
+
+bool Player::loses() const {
+
+
+    return false;
 }
+
 int Player::recurrence() const{
     std::cout << "recurrence called" << std::endl;
     if(!this->pimpl->board)

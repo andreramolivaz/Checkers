@@ -25,7 +25,9 @@ int main(int argc, char **argv){
         p1.load_board("./load_test.txt");
         p2.load_board("./ciao.txt");
         p2.load_board("./ciao.txt");
+        cout<<p2.valid_move();
         p2.load_board("./load_test2.txt");
+
         p1.load_board("./load_test2.txt");
         Player p3(p1);
         p2=p1;
@@ -33,14 +35,18 @@ int main(int argc, char **argv){
 
         p2.load_board("./load_test2.txt");
 
-        //p3.store_board("store_test.txt" , 2 );
+        p1.store_board("store_test.txt" , 1 );
 
 
         p4.store_board("store_test.txt" , 0 );
         p4.move();
         p4.store_board("store_test2.txt" , 0 );
+        p4.load_board("./load_test2.txt");
+        cout<<p4.valid_move();
         cout<<p4.recurrence();
-
+        p4.pop();
+        p4.load_board("./load_test2.txt");
+        cout<<p4.wins(1);
         cout<< p4(7,0,0);
     }
     catch(player_exception& e){
