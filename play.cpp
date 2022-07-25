@@ -16,7 +16,7 @@ int main(int argc, char **argv){
     try {
         Player p1(1);
         Player p2(1);
-        Player p4(1);
+        Player p4(2);
         Player p5(2);
 
         p1.init_board("./ciao.txt");
@@ -46,7 +46,8 @@ int main(int argc, char **argv){
         cout<<p4.recurrence();
         p4.pop();
         p4.load_board("./load_test2.txt");
-        cout<<p4.wins(1);
+        cout<<p4.wins(2);
+        cout<<p4.wins();
         cout<< p4(7,0,0);
     }
     catch(player_exception& e){
