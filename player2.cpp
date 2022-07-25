@@ -921,17 +921,57 @@ bool Player::wins() const {
 
 bool Player::loses(int player_nr) const {
 
+    Impl* temp = this->pimpl;
+    int last_index=-1;
+    while (temp->next) {
+        last_index = temp->index;
+        temp=temp->next;
+    }
+
+
+    if(last_index+1==0 || ((player_nr != 1) && (player_nr != 2)))
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: invalid player number or empty history"};
 
     bool res;
+    Player::piece player[2];
+    if(player_nr == 1){
+        player[0] = x;
+        player [1] = X;
+    }
+    else {
+        player[0] = o;
+        player[1]=O;
+    }
 
-
-    return res;
+    if(get_pieces_left(temp->board, player)==0) return true;
+    else return false;
 }
 
 bool Player::loses() const {
+    Impl* temp = this->pimpl;
+    int last_index=-1;
+    while (temp->next) {
+        last_index = temp->index;
+        temp=temp->next;
+    }
 
 
-    return true;
+    if(last_index+1==0)
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: invalid player number or empty history"};
+
+    bool res;
+    Player::piece player[2];
+    if(temp->player_nr == 1){
+        player[0] = x;
+        player [1] = X;
+    }
+    else {
+        player[0] = o;
+        player[1]=O;
+    }
+
+    if(get_pieces_left(temp->board, player)==0) return true;
+    else return false;
 }
 
 int Player::recurrence() const{
