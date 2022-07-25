@@ -36,9 +36,9 @@ Player::piece to_piece(char c){
 
 int get_pieces_left (Player::piece** board, Player::piece p[2]){
     int res=0;
-     for (int i=0; i < 8; i++)
-         for (int j=0; j < 8; j++)
-             if(board[i][j]==p[0] || board[i][j]==p[1] )res++;
+    for (int i=0; i < 8; i++)
+        for (int j=0; j < 8; j++)
+            if(board[i][j]==p[0] || board[i][j]==p[1] )res++;
     return res;
 }
 
@@ -399,10 +399,10 @@ Player::~Player(){
 Player::Player(const Player& copy){
     std::cout << "copy constructor called" << std::endl;
     this->pimpl = new Impl{
-    nullptr,
-    initialize_board(),
-    copy.pimpl->index,
-        copy.pimpl->player_nr
+            nullptr,
+            initialize_board(),
+            copy.pimpl->index,
+            copy.pimpl->player_nr
     };
 
     for(int i = 0; i < 8; i++) {
@@ -416,10 +416,10 @@ Player::Player(const Player& copy){
 
     while(copyTemp->next) {
         thisTemp->next = new Impl{
-            nullptr,
-            initialize_board(),
-            thisTemp->index + 1,
-            copyTemp->player_nr
+                nullptr,
+                initialize_board(),
+                thisTemp->index + 1,
+                copyTemp->player_nr
         };
 
         for(int i = 0; i < 8; i++) {
@@ -669,10 +669,10 @@ void Player::init_board(const std::string& filename) const{
     }
 
     temp->next = new Impl{
-        nullptr,
-        initialize_board(),
-        lastIndex+1,
-        this->pimpl->player_nr
+            nullptr,
+            initialize_board(),
+            lastIndex+1,
+            this->pimpl->player_nr
     };
     temp = temp->next;
 
@@ -734,7 +734,7 @@ void Player::move(){
 
 
     temp = this->pimpl;
-     last_index = this->pimpl->index;
+    last_index = this->pimpl->index;
     // goes to the end of the player list
     while(temp->next) {
         last_index++;
@@ -887,8 +887,8 @@ bool Player::wins(int player_nr) const {
         player[1]=O;
     }
 
-   if(get_pieces_left(temp->board, player)==0) return true;
-   else return false;
+    if(get_pieces_left(temp->board, player)==0) return true;
+    else return false;
 }
 
 bool Player::wins() const {
@@ -921,17 +921,57 @@ bool Player::wins() const {
 
 bool Player::loses(int player_nr) const {
 
+    Impl* temp = this->pimpl;
+    int last_index=-1;
+    while (temp->next) {
+        last_index = temp->index;
+        temp=temp->next;
+    }
+
+
+    if(last_index+1==0 || ((player_nr != 1) && (player_nr != 2)))
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: invalid player number or empty history"};
 
     bool res;
+    Player::piece player[2];
+    if(player_nr == 1){
+        player[0] = x;
+        player [1] = X;
+    }
+    else {
+        player[0] = o;
+        player[1]=O;
+    }
 
-
-    return res;
+    if(get_pieces_left(temp->board, player)==0) return true;
+    else return false;
 }
 
 bool Player::loses() const {
+    Impl* temp = this->pimpl;
+    int last_index=-1;
+    while (temp->next) {
+        last_index = temp->index;
+        temp=temp->next;
+    }
 
 
-    return true;
+    if(last_index+1==0)
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: invalid player number or empty history"};
+
+    bool res;
+    Player::piece player[2];
+    if(temp->player_nr == 1){
+        player[0] = x;
+        player [1] = X;
+    }
+    else {
+        player[0] = o;
+        player[1]=O;
+    }
+
+    if(get_pieces_left(temp->board, player)==0) return true;
+    else return false;
 }
 
 int Player::recurrence() const{
