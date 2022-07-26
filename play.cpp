@@ -16,7 +16,7 @@ int main(int argc, char **argv){
     try {
         Player p1(1);
         Player p2(1);
-        Player p4(1);
+        Player p4(2);
         Player p5(2);
 
         p1.init_board("./ciao.txt");
