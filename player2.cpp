@@ -1,7 +1,10 @@
 #include "player.hpp"
 
 static const int SIZE = 8;
-
+/**
+ * @brief convert to char a piece
+ * @param p the piece to convert
+ */
 char to_char(Player::piece p){
     switch (p) {
         case Player::piece::x:
@@ -17,7 +20,10 @@ char to_char(Player::piece p){
     }
     return ' ';
 }
-
+/**
+ * @brief convert to piece a char
+ * @param c the char to convert
+ */
 Player::piece to_piece(char c){
     switch (c) {
         case 'x':
@@ -33,15 +39,21 @@ Player::piece to_piece(char c){
     }
     return Player::piece::e;
 }
-
+/**
+ * @brief get the number of piece of a player
+ * @param board the game board
+ * @param player the player to check [0] = (x V o) [1] = (X V O) 
+ */
 int get_left (Player::piece** board, Player::piece p[2]){
     int res=0;
-    for (int i=0; i < SIZE; i++)
-        for (int j=0; j < SIZE; j++)
-            if(board[i][j]==p[0] || board[i][j]==p[1] )res++;
+    for (int i=0; i < 8; i++)
+        for (int j=0; j < 8; j++)
+            if(board[i][j]==p[0] || board[i][j]==p[1] ) res++;
     return res;
 }
-
+/**
+ * @brief struct to store a move
+ */
 struct Move {
     std::pair<int, int> start;
     std::pair<int, int> eat;
@@ -49,194 +61,145 @@ struct Move {
     std::pair<int, int> finish;
     Move() {
         start = std::make_pair(0,0);
-        finish = std::make_pair(0,0);
         eat = std::make_pair(0,0);
         moving = Player::piece::e;
+        finish = std::make_pair(0,0);
     }
     void create_move(int start_x, int start_y, int finish_x, int finish_y, int eaten_x, int eaten_y, Player::piece p) {
         start = std::make_pair(start_x, start_y);
         finish = std::make_pair(finish_x, finish_y);
-        eat = std::make_pair(eaten_x, eaten_y);
         moving = p;
+        eat = std::make_pair(eaten_x, eaten_y);
     }
 };
-
+/**
+ * @brief return the corresponding dama of a piece 
+ */
 Player::piece get_dame(Player::piece p) {
-    if(p == Player::piece::x) return Player::piece::X;
-    else return Player::piece::O;
+    return (p == Player::piece::x) ?  Player::piece::X :  Player::piece::O;
 }
-
+/**
+ * @brief return the player of the next round
+ */
 Player::piece next_player(Player::piece p) {
-    if (p == Player::piece::x) return Player::piece::o;
-    else return Player::piece::x;
+    return (p == Player::piece::x) ?  Player::piece::o :  Player::piece::x;
 }
-
-Move* get_all_moves(Player::piece** const b, Player::piece p, int direction) {
-
-    Move* array = new Move[40];
-    int before_x = 0, before_y = 0, after_x = 0, after_y = 0, index = 0;
-
-    Player::piece p_dame = get_dame(p), enemy_dame = (get_dame(next_player(p))), enemy_pawn = next_player(p);
-
+/**
+ * @brief return all the possible moves of a player
+ * @param direction the move direction 1 or -1
+ * @param board the board game
+ * @param p the player piece
+ */
+Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
+    int now_x = 0, now_y = 0;
+    int future_x = 0, future_y = 0;
+    Move* possible_moves = new Move[40];
+    Player::piece p_dame = get_dame(p);
+    Player::piece enemy_dame = (get_dame(next_player(p)));
+    Player::piece enemy_pawn = next_player(p);
+    Player::piece aux_pawn = p;
+    int index = 0;
     for(int j = 0; j < SIZE; j++) {
         for(int k = 0; k < SIZE; k++) {
-            //save old position
-            before_x = j;
-            before_y = k;
-            //simple piece
-            if(b[before_x][before_y] == p) {
-                //try to
-                //mi salvo le nuove coordinate
-                after_x = before_x + direction;
-                after_y = before_y - direction;
-
-                //guardo se le coordinate vanno bene
-                if((after_x >= 0) && (after_x < SIZE) && (after_y >= 0) && (after_y < SIZE)) {
-                    //guardo se è libero
-                    if(b[after_x][after_y] == Player::piece::e) {
-                        array[index].create_move(before_x, before_y, after_x, after_y, 0, 0, p);
-
+            now_x = j;
+            now_y = k;
+            aux_pawn = b[now_x][now_y];
+            if(aux_pawn == p) {
+                future_x = now_x + direction;
+                future_y = now_y - direction;
+                if((future_x >= 0) && (future_y >= 0) && (future_y < SIZE) && (future_x < SIZE)) {
+                    aux_pawn = b[future_x][future_y];
+                    if(aux_pawn == Player::piece::e) {
+                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
                         index++;
-                    }//guardo se posso mangiare
-                    else if(b[after_x][after_y] == enemy_pawn) {
-                        //guardo se le nuove coordinate vanno bene
-                        if(((after_x + direction) >= 0) && ((after_x + direction) < SIZE) && ((after_y - direction) >= 0) && ((after_y - direction) < SIZE)) {
-                            //guardo se è libero dopo il salto
-                            if((b[after_x + direction][after_y - direction] == Player::piece::e)) {
-                                array[index].create_move(before_x, before_y, (after_x + direction), (after_y - direction), after_x, after_y, p);
-
+                    }
+                    else if(aux_pawn == enemy_pawn) {
+                        if(((future_x + direction) >= 0) && ((future_y - direction) >= 0) && ((future_x + direction) < SIZE)  && ((future_y - direction) < SIZE)) {
+                           aux_pawn= b[future_x + direction][future_y - direction];
+                            if((aux_pawn == Player::piece::e)) {
+                                possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y - direction), future_x, future_y, p);
                                 index++;
                             }
                         }
                     }
                 }
-
-                //provo a saltare a destra
-                //mi salvo le nuove coordinate
-                after_x = before_x + direction;
-                after_y = before_y + direction;
-
-                //guardo se le coordinate vanno bene
-                if((after_x >= 0) && (after_x < SIZE) && (after_y >= 0) && (after_y < SIZE)) {
-                    //guardo se è libero
-                    if(b[after_x][after_y] == Player::piece::e) {
-                        array[index].create_move(before_x, before_y, after_x, after_y, 0, 0, p);
-
+                future_y = now_y + direction;
+                future_x = now_x + direction;
+                if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
+                    aux_pawn = b[future_x][future_y];
+                    if(aux_pawn == Player::piece::e) {
+                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
                         index++;
-                    }//guardo se posso mangiare
-                    else if(b[after_x][after_y] == enemy_pawn) {
-                        //guardo se le nuove coordinate vanno bene
-                        if(((after_x + direction) >= 0) && ((after_x + direction) < SIZE) && ((after_y + direction) >= 0) && ((after_y + direction) < SIZE)) {
-                            //guardo se è libero dopo il salto
-                            if((b[after_x + direction][after_y + direction] == Player::piece::e)) {
-                                array[index].create_move(before_x, before_y, (after_x + direction), (after_y + direction), after_x, after_y, p);
-
+                    }else if(aux_pawn == enemy_pawn) {
+                        if(((future_x + direction) >= 0) && ((future_y + direction) >= 0) && ((future_x + direction) < SIZE) &&  ((future_y + direction) < SIZE)) {
+                            aux_pawn = b[future_x + direction][future_y + direction];
+                            if((aux_pawn == Player::piece::e)) {
+                                possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y + direction), future_x, future_y, p);
                                 index++;
                             }
                         }
                     }
                 }
-            }//se trovo una dama
-            else if(b[before_x][before_y] == p_dame) {
-
-                //provo a saltare in alto a sinistra
-                //mi salvo le nuove coordinate
-                after_x = before_x + 1;
-                after_y = before_y - 1;
-
-                //guardo se le coordinate vanno bene
-                if((after_x >= 0) && (after_x < SIZE) && (after_y >= 0) && (after_y < SIZE)) {
-                    //guardo se è libero
-                    if(b[after_x][after_y] == Player::piece::e) {
-                        array[index].create_move(before_x, before_y, after_x, after_y, 0, 0, p_dame);
-
+            }
+            else if(b[now_x][now_y] == p_dame) {
+                future_y = now_y - 1;
+                future_x = now_x + 1;
+                if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
+                    aux_pawn = b[future_x][future_y];
+                    if(aux_pawn == Player::piece::e) {
+                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                         index++;
-                    }//guardo se posso mangiare
-                    else if((b[after_x][after_y] == enemy_pawn) || (b[after_x][after_y] == enemy_dame)) {
-                        //guardo se le nuove coordinate vanno bene
-                        if(((after_x + 1) >= 0) && ((after_x + 1) < SIZE) && ((after_y - 1) >= 0) && ((after_y - 1) < SIZE)) {
-                            //guardo se è libero dopo il salto
-                            if((b[after_x + 1][after_y - 1] == Player::piece::e)) {
-                                array[index].create_move(before_x, before_y, (after_x + 1), (after_y - 1), after_x, after_y, p_dame);
-
+                    }
+                    else if((aux_pawn == enemy_pawn) || (aux_pawn == enemy_dame)) {
+                        if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
+                            if((b[future_x + 1][future_y - 1] == Player::piece::e)) {
+                                possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y - 1), future_x, future_y, p_dame);
                                 index++;
                             }
                         }
                     }
                 }
-
-                //provo a saltare in alto a destra
-                //mi salvo le nuove coordinate
-                after_x = before_x + 1;
-                after_y = before_y + 1;
-
-                //guardo se le coordinate vanno bene
-                if((after_x >= 0) && (after_x < SIZE) && (after_y >= 0) && (after_y < SIZE)) {
-                    //guardo se è libero
-                    if(b[after_x][after_y] == Player::piece::e) {
-                        array[index].create_move(before_x, before_y, after_x, after_y, 0, 0, p_dame);
-
+                future_x = now_x + 1;
+                future_y = now_y + 1;
+                if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                    if(b[future_x][future_y] == Player::piece::e) {
+                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                         index++;
-                    }//guardo se posso mangiare
-                    else if((b[after_x][after_y] == enemy_pawn) || (b[after_x][after_y] == enemy_dame)) {
-                        //guardo se le nuove coordinate vanno bene
-                        if(((after_x + 1) >= 0) && ((after_x + 1) < SIZE) && ((after_y + 1) >= 0) && ((after_y + 1) < SIZE)) {
-                            //guardo se è libero dopo il salto
-                            if((b[after_x + 1][after_y + 1] == Player::piece::e)) {
-                                array[index].create_move(before_x, before_y, (after_x + 1), (after_y + 1), after_x, after_y, p_dame);
-
+                    }
+                    else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                        if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
+                            if((b[future_x + 1][future_y + 1] == Player::piece::e)) {
+                                possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y + 1), future_x, future_y, p_dame);
                                 index++;
                             }
                         }
                     }
                 }
-
-                //provo a saltare in basso a sinistra
-                //mi salvo le nuove coordinate
-                after_x = before_x - 1;
-                after_y = before_y - 1;
-
-                //guardo se le coordinate vanno bene
-                if((after_x >= 0) && (after_x < SIZE) && (after_y >= 0) && (after_y < SIZE)) {
-                    //guardo se è libero
-                    if(b[after_x][after_y] == Player::piece::e) {
-                        array[index].create_move(before_x, before_y, after_x, after_y, 0, 0, p_dame);
-
+                future_x = now_x - 1;
+                future_y = now_y - 1;
+                if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                    if(b[future_x][future_y] == Player::piece::e) {
+                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                         index++;
-                    }//guardo se posso mangiare
-                    else if((b[after_x][after_y] == enemy_pawn) || (b[after_x][after_y] == enemy_dame)) {
-                        //guardo se le nuove coordinate vanno bene
-                        if(((after_x - 1) >= 0) && ((after_x - 1) < SIZE) && ((after_y - 1) >= 0) && ((after_y - 1) < SIZE)) {
-                            //guardo se è libero dopo il salto
-                            if((b[after_x - 1][after_y - 1] == Player::piece::e)) {
-                                array[index].create_move(before_x, before_y, (after_x - 1), (after_y - 1), after_x, after_y, p_dame);
-
+                    }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                        if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
+                            if((b[future_x - 1][future_y - 1] == Player::piece::e)) {
+                                possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y - 1), future_x, future_y, p_dame);
                                 index++;
                             }
                         }
                     }
                 }
-
-                //provo a saltare in basso a destra
-                //mi salvo le nuove coordinate
-                after_x = before_x - 1;
-                after_y = before_y + 1;
-
-                //guardo se le coordinate vanno bene
-                if((after_x >= 0) && (after_x < SIZE) && (after_y >= 0) && (after_y < SIZE)) {
-                    //guardo se è libero
-                    if(b[after_x][after_y] == Player::piece::e) {
-                        array[index].create_move(before_x, before_y, after_x, after_y, 0, 0, p_dame);
-
+                future_x = now_x - 1;
+                future_y = now_y + 1;
+                if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                    if(b[future_x][future_y] == Player::piece::e) {
+                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                         index++;
-                    }//guardo se posso mangiare
-                    else if((b[after_x][after_y] == enemy_pawn) || (b[after_x][after_y] == enemy_dame)) {
-                        //guardo se le nuove coordinate vanno bene
-                        if(((after_x - 1) >= 0) && ((after_x - 1) < SIZE) && ((after_y + 1) >= 0) && ((after_y + 1) < SIZE)) {
-                            //guardo se è libero dopo il salto
-                            if((b[after_x - 1][after_y + 1] == Player::piece::e)) {
-                                array[index].create_move(before_x, before_y, (after_x - 1), (after_y + 1), after_x, after_y, p_dame);
-
+                    }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                        if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
+                            if((b[future_x - 1][future_y + 1] == Player::piece::e)) {
+                                possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y + 1), future_x, future_y, p_dame);
                                 index++;
                             }
                         }
@@ -245,17 +208,20 @@ Move* get_all_moves(Player::piece** const b, Player::piece p, int direction) {
             }
         }
     }
-
-    return array;
+    return possible_moves;
 }
-
+/**
+ * @brief get a random move between all the possible moves
+ * @param board the board game
+ * @param player the player piece
+ */
 Move get_random_move(Player::piece** board, Player::piece player) {
 
     int direction=0;
     if(player == Player::piece::x) direction = 1;
     else direction = -1;
 
-    Move* moves = get_all_moves(board, player, direction);
+    Move* moves = get_all_moves(direction, board, player);
     Move final_move;
 
     int size = 0, random_index = 0;
@@ -273,7 +239,11 @@ Move get_random_move(Player::piece** board, Player::piece player) {
 
     return final_move;
 }
-
+/**
+ * @brief compare two boards
+ * @param m1 the first board
+ * @param m2 the second board
+ */
 bool are_board_equals(Player::piece** m1, Player::piece** m2) {
     bool res = true;
     for(int i = 0; ((i < SIZE) && (res)); i++) {
@@ -284,7 +254,11 @@ bool are_board_equals(Player::piece** m1, Player::piece** m2) {
     }
     return res;
 }
-
+/**
+ * @brief create a board given the move
+ * @param b the board
+ * @param m the move
+ */
 Player::piece** create_board(Player::piece** const b, Move m) {
     Player::piece** res = b;
 
@@ -315,23 +289,30 @@ Player::piece** create_board(Player::piece** const b, Move m) {
 
     return res;
 }
-
+/**
+ * @brief delete memory allocated for the board
+ * @param board the board to delete
+ */
 void delete_board(Player::piece** (&board)){
     for(int i = 0; i < SIZE; i++) delete[] board[i];
     delete[] board;
 }
-
+/**
+ * @brief check if the filename is valid
+ * @param filename the filename to check
+ */
 bool file_exists(const std::string& filename){
     std::ifstream f(filename.c_str());
     return f.good();
 }
-
+/**
+ * @brief initialize the board
+ */
 Player::piece** initialize_board(){
     Player::piece** matrix = nullptr;
     matrix = new Player::piece*[SIZE];
     for(int i = 0; i < SIZE; i++)
         matrix[i] = new Player::piece[SIZE];
-
     return matrix;
 }
 
@@ -342,20 +323,17 @@ struct Player::Impl{
     int player_nr; // the player number
 };
 
+/**
+ * @brief constructor of the player
+ */
 Player::Player(int player_nr) {
-
-    std::cout << "constructor called" << std::endl;
-
-    //checks if player number is valid otherwise throws an exception
     if (player_nr != 1 && player_nr != 2)
         throw player_exception{player_exception::index_out_of_bounds, "The player can only be 0 or 1"};
-
-    pimpl = new Impl{nullptr, nullptr, 0, player_nr}; // initializes the memory
-
-    std::cout << "constructor ended" << std::endl;
-
-} // constructor
-
+    pimpl = new Impl{nullptr, nullptr, 0, player_nr};
+}
+/**
+ * @brief Destructor of the player
+ */
 Player::~Player(){
     std::cout << "destructor called" << std::endl;
     // loops the list
@@ -370,7 +348,9 @@ Player::~Player(){
     delete pimpl; // deletes the last memory
     std::cout << "destructor ended" << std::endl;
 } // destructor
-
+/**
+ * @brief copy constructor of the player
+ */
 Player::Player(const Player& copy){
     std::cout << "copy constructor called" << std::endl;
     this->pimpl = new Impl{
@@ -408,7 +388,9 @@ Player::Player(const Player& copy){
 
     std::cout << "copy constructor ended" << std::endl;
 }
-
+/**
+ * @brief copy assignment operator of the player
+ */
 Player& Player::operator=(const Player& copy) {
     std::cout << "operator= called" << std::endl;
     if(this->pimpl != copy.pimpl) {
@@ -451,7 +433,9 @@ Player& Player::operator=(const Player& copy) {
     std::cout << "operator= ended" << std::endl;
     return *this;
 }
-
+/**
+ * @brief operator () to return a specific piece given it's coordinates
+ */
 Player::piece Player::operator()(int r, int c, int history_offset) const {
     std::cout << "operator() called" << std::endl;
     Impl* temp = this->pimpl;
@@ -471,7 +455,10 @@ Player::piece Player::operator()(int r, int c, int history_offset) const {
     std::cout << "operator() ended" << std::endl;
     return (temp->board[r][c]);
 }
-
+/**
+ * @brief load the board from a file
+ * @param filename the filename to load from
+ */
 void Player::load_board(const std::string& filename){
     std::cout << "load board called" << std::endl;
     if(this->pimpl->next == nullptr)
@@ -577,7 +564,11 @@ void Player::load_board(const std::string& filename){
     //delete temp1;
     std::cout << "load board ended" << std::endl;
 }
-
+/**
+ * @brief store the board to a file given the offset
+ * @param filename the filename to store to
+ * @param history_offset the 'index' of the history
+ */
 void Player::store_board(const std::string& filename, int history_offset) const{
     std::cout << "store_board called" << std::endl;
     Impl* temp = this->pimpl;
@@ -610,7 +601,10 @@ void Player::store_board(const std::string& filename, int history_offset) const{
     file.close();
     std::cout << "store_board ended" << std::endl;
 }
-
+/**
+ * @brief initialize and store an new board
+ * @param filename the filename to store to
+ */
 void Player::init_board(const std::string& filename) const{
     // initial board
     std::cout << "init_board called" << std::endl;
@@ -677,7 +671,9 @@ void Player::init_board(const std::string& filename) const{
     //delete_board(temp1->board);
     std::cout << "init_board ended" << std::endl;
 }
-
+/**
+ * @brief make a move on the board
+ */
 void Player::move(){
     std::cout << "move called" << std::endl;
     Impl* temp = this->pimpl;
@@ -737,7 +733,9 @@ void Player::move(){
     std::cout << "move ended" << std::endl;
 
 }
-
+/**
+ * @brief check if the move is valid
+ */
 bool Player::valid_move() const{
     std::cout << "valid_move called" << std::endl;
     bool res = false;
@@ -782,7 +780,7 @@ bool Player::valid_move() const{
 
 
     //controllo le mosse del player 1
-    moves_x = get_all_moves(before, Player::piece::x, 1);
+    moves_x = get_all_moves(1, before, Player::piece::x);
 
     for(int i = 0; ((i < 40) && (moves_x[i].moving != Player::piece::e)); i++) {
         for (int i = 0; i < SIZE; i++)
@@ -793,7 +791,7 @@ bool Player::valid_move() const{
     }
 
     //controllo le mosse del player 2
-    moves_o = get_all_moves(before, Player::piece::o, -1);
+    moves_o = get_all_moves(-1, before, Player::piece::o);
 
     for(int i = 0; ((i < 40) && (moves_o[i].moving != Player::piece::e) && (!res)); i++) {
         for (int i = 0; i < SIZE; i++)
@@ -812,7 +810,9 @@ bool Player::valid_move() const{
     return res;
 
 }
-
+/**
+ * @brief delete the last board in the history
+ */
 void Player::pop(){
     std::cout << "pop called" << std::endl;
     if(!this->pimpl->board)
@@ -837,7 +837,10 @@ void Player::pop(){
     delete temp0;
     std::cout << "pop ended" << std::endl;
 }
-
+/**
+ * @brief check if player_nr is the winner
+ * @param player_nr the player number 1(x) or 2(o)
+ */
 bool Player::wins(int player_nr) const {
 
     Impl* temp = this->pimpl;
@@ -865,7 +868,9 @@ bool Player::wins(int player_nr) const {
     if(get_left(temp->board, player)==0) return true;
     else return false;
 }
-
+/**
+ * @brief check if the game is wan by player this
+ */
 bool Player::wins() const {
 
     Impl* temp = this->pimpl;
@@ -893,7 +898,10 @@ bool Player::wins() const {
     if(get_left(temp->board, player)==0) return true;
     else return false;
 }
-
+/**
+ * @brief check if player_nr is the loser
+ * @param player_nr the player number 1(x) or 2(o)
+ */
 bool Player::loses(int player_nr) const {
 
     Impl* temp = this->pimpl;
@@ -921,7 +929,9 @@ bool Player::loses(int player_nr) const {
     if(get_left(temp->board, player)==0) return true;
     else return false;
 }
-
+/**
+ * @brief check if the game is losed by player this
+ */
 bool Player::loses() const {
     Impl* temp = this->pimpl;
     int last_index=-1;
@@ -948,7 +958,9 @@ bool Player::loses() const {
     if(get_left(temp->board, player)==0) return true;
     else return false;
 }
-
+/**
+ * @brief give the number of recurrence of the last board in the history
+ */
 int Player::recurrence() const{
     std::cout << "recurrence called" << std::endl;
     if(!this->pimpl->board)

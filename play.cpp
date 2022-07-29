@@ -18,6 +18,15 @@ int main(int argc, char **argv){
         Player p2(1);
         Player p4(2);
         Player p5(2);
+        p5.load_board("./load_test2.txt");
+        p5.init_board("./ciao3.txt");
+
+p5.pop();
+        p5.store_board("store_test7.txt" , 0 );
+p5.pop();
+     //   p5.store_board("store_test8.txt" , 0 );
+
+
 
         p1.init_board("./ciao.txt");
         p1.init_board("./ciao2.txt");
