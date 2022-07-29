@@ -34,7 +34,7 @@ Player::piece to_piece(char c){
     return Player::piece::e;
 }
 
-int get_pieces_left (Player::piece** board, Player::piece p[2]){
+int get_left (Player::piece** board, Player::piece p[2]){
     int res=0;
     for (int i=0; i < SIZE; i++)
         for (int j=0; j < SIZE; j++)
@@ -44,53 +44,31 @@ int get_pieces_left (Player::piece** board, Player::piece p[2]){
 
 struct Move {
     std::pair<int, int> start;
-    std::pair<int, int> finish;
     std::pair<int, int> eat;
-    Player::piece piece_moving;
-
+    Player::piece moving;
+    std::pair<int, int> finish;
     Move() {
         start = std::make_pair(0,0);
         finish = std::make_pair(0,0);
         eat = std::make_pair(0,0);
-        piece_moving = Player::piece::e;
+        moving = Player::piece::e;
     }
-
-    void print() {
-        if(eat == std::make_pair(0,0))
-            std::cout<<to_char(piece_moving)<<": "<<"("<<start.first<<", "<<start.second<<") --> ("<<finish.first<<", "<<finish.second<<")"<<std::endl;
-        else
-            std::cout<<to_char(piece_moving)<<": "<<"("<<start.first<<", "<<start.second<<") --> ("<<finish.first<<", "<<finish.second<<") -- eating in: ("<<eat.first<<", "<<eat.second<<")"<<std::endl;
-    }
-
     void create_move(int start_x, int start_y, int finish_x, int finish_y, int eaten_x, int eaten_y, Player::piece p) {
         start = std::make_pair(start_x, start_y);
         finish = std::make_pair(finish_x, finish_y);
         eat = std::make_pair(eaten_x, eaten_y);
-        piece_moving = p;
-    }
-
-    bool operator==(Move m) {
-        bool res = false;
-
-        if((this->eat == m.eat) && (this->finish == m.finish) && (this->start == m.start) && (this->piece_moving == m.piece_moving))
-            res = true;
-
-        return res;
+        moving = p;
     }
 };
 
 Player::piece get_dame(Player::piece p) {
-    if(p == Player::piece::x)
-        return Player::piece::X;
-    else
-        return Player::piece::O;
+    if(p == Player::piece::x) return Player::piece::X;
+    else return Player::piece::O;
 }
 
 Player::piece next_player(Player::piece p) {
-    if(p == Player::piece::x)
-        return Player::piece::o;
-    else
-        return Player::piece::x;
+    if (p == Player::piece::x) return Player::piece::o;
+    else return Player::piece::x;
 }
 
 Move* get_all_moves(Player::piece** const b, Player::piece p, int direction) {
@@ -102,15 +80,12 @@ Move* get_all_moves(Player::piece** const b, Player::piece p, int direction) {
 
     for(int j = 0; j < SIZE; j++) {
         for(int k = 0; k < SIZE; k++) {
-
-            //mi salvo le vecchie coordinate
+            //save old position
             before_x = j;
             before_y = k;
-
-            //se trovo un pezzo normale
+            //simple piece
             if(b[before_x][before_y] == p) {
-
-                //provo a saltare a sinistra
+                //try to
                 //mi salvo le nuove coordinate
                 after_x = before_x + direction;
                 after_y = before_y - direction;
@@ -285,7 +260,7 @@ Move get_random_move(Player::piece** board, Player::piece player) {
 
     int size = 0, random_index = 0;
 
-    for(int i = 0; ((i < 40) && (moves[i].piece_moving != Player::piece::e)); i++)
+    for(int i = 0; ((i < 40) && (moves[i].moving != Player::piece::e)); i++)
         size++;
 
     if(size != 0) {
@@ -317,14 +292,14 @@ Player::piece** create_board(Player::piece** const b, Move m) {
     res[m.start.first][m.start.second] = Player::piece::e;
 
     //controllo se il pezzo è x
-    if(m.piece_moving == Player::piece::x) {
+    if(m.moving == Player::piece::x) {
         //controllo se diventa una dama o no
         if(m.finish.first == (SIZE - 1))
             res[m.finish.first][m.finish.second] = Player::piece::X;
         else
             res[m.finish.first][m.finish.second] = Player::piece::x;
     }//controllo se il pezzo è o
-    else if(m.piece_moving == Player::piece::o) {
+    else if(m.moving == Player::piece::o) {
         //controllo se diventa una dama o no
         if(m.finish.first == 0)
             res[m.finish.first][m.finish.second] = Player::piece::O;
@@ -332,7 +307,7 @@ Player::piece** create_board(Player::piece** const b, Move m) {
             res[m.finish.first][m.finish.second] = Player::piece::o;
     }//controllo se il pezzo è altro (dama)
     else
-        res[m.finish.first][m.finish.second] = m.piece_moving;
+        res[m.finish.first][m.finish.second] = m.moving;
 
     //se ha mangiato il pezzo mangiato diventa vuoto
     //senno rimetto vuota la tessera (0,0)
@@ -809,7 +784,7 @@ bool Player::valid_move() const{
     //controllo le mosse del player 1
     moves_x = get_all_moves(before, Player::piece::x, 1);
 
-    for(int i = 0; ((i < 40) && (moves_x[i].piece_moving != Player::piece::e)); i++) {
+    for(int i = 0; ((i < 40) && (moves_x[i].moving != Player::piece::e)); i++) {
         for (int i = 0; i < SIZE; i++)
             for (int j = 0; j < SIZE; j++)
                 copy[i][j] = before[i][j];
@@ -820,7 +795,7 @@ bool Player::valid_move() const{
     //controllo le mosse del player 2
     moves_o = get_all_moves(before, Player::piece::o, -1);
 
-    for(int i = 0; ((i < 40) && (moves_o[i].piece_moving != Player::piece::e) && (!res)); i++) {
+    for(int i = 0; ((i < 40) && (moves_o[i].moving != Player::piece::e) && (!res)); i++) {
         for (int i = 0; i < SIZE; i++)
             for (int j = 0; j < SIZE; j++)
                 copy[i][j] = before[i][j];
@@ -887,7 +862,7 @@ bool Player::wins(int player_nr) const {
         player[1]=O;
     }
 
-    if(get_pieces_left(temp->board, player)==0) return true;
+    if(get_left(temp->board, player)==0) return true;
     else return false;
 }
 
@@ -915,7 +890,7 @@ bool Player::wins() const {
         player[1]=O;
     }
 
-    if(get_pieces_left(temp->board, player)==0) return true;
+    if(get_left(temp->board, player)==0) return true;
     else return false;
 }
 
@@ -943,7 +918,7 @@ bool Player::loses(int player_nr) const {
         player[1]=O;
     }
 
-    if(get_pieces_left(temp->board, player)==0) return true;
+    if(get_left(temp->board, player)==0) return true;
     else return false;
 }
 
@@ -970,7 +945,7 @@ bool Player::loses() const {
         player[1]=O;
     }
 
-    if(get_pieces_left(temp->board, player)==0) return true;
+    if(get_left(temp->board, player)==0) return true;
     else return false;
 }
 
