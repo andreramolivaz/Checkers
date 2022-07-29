@@ -41,6 +41,8 @@ int main(int argc, char **argv){
         p4.store_board("store_test.txt" , 0 );
         p4.move();
         p4.store_board("store_test2.txt" , 0 );
+
+
         p4.load_board("./load_test2.txt");
         cout<<p4.valid_move();
         cout<<p4.recurrence();
@@ -52,6 +54,9 @@ int main(int argc, char **argv){
         cout<<"p4 lose?"<<p4.loses()<<endl;
 
         cout<< p4(7,0,0);
+
+
+
     }
     catch(player_exception& e){
         std::cout << e.msg << std::endl;
@@ -60,3 +65,4 @@ int main(int argc, char **argv){
 
 
 }
+
