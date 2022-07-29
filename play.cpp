@@ -16,6 +16,9 @@ int main(int argc, char **argv){
     try {
         Player p1(1);
         Player p2(1);
+
+
+
         Player p4(2);
         Player p5(2);
         p5.load_board("./load_test2.txt");
