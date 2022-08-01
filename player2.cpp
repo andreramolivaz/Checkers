@@ -45,11 +45,11 @@ Player::piece to_piece(char c){
  * @param player the player to check [0] = (x V o) [1] = (X V O) 
  */
 int get_left (Player::piece** board, Player::piece p[2]){
-    int res=0;
+    int count=0;
     for (int i=0; i < 8; i++)
         for (int j=0; j < 8; j++)
-            if(board[i][j]==p[0] || board[i][j]==p[1] ) res++;
-    return res;
+            if(board[i][j]==p[1] || board[i][j]==p[0] ) count++;
+    return count;
 }
 /**
  * @brief struct to store a move
@@ -179,7 +179,7 @@ Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
                 }
                 future_x = now_x - 1;
                 future_y = now_y - 1;
-                if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                if((future_x >= 0) && (future_x < 8) && (future_y >= 0) && (future_y < 8)) {
                     if(b[future_x][future_y] == Player::piece::e) {
                         possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                         index++;
@@ -219,8 +219,9 @@ Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
  */
 Move get_random_move(Player::piece** board, Player::piece player) {
     Move final_move;
+    std::srand(time(NULL));
     int direction=0;
-    (player == Player::piece::x)?direction = 1 : direction = -1;
+    (player == Player::piece::x)? direction = 1 : direction = -1;
     Move* moves = get_all_moves(direction, board, player);
     int size = 0, random_index = 0;
     for(int i = 0; ((i < 40) && (moves[i].moving != Player::piece::e)); i++) size++;
@@ -322,7 +323,7 @@ Player::~Player(){
 /**
  * @brief copy constructor of the player
  */
-Player::Player(const Player& copy){
+Player::Player(const Player& copy) {
     std::cout << "copy constructor called" << std::endl;
     this->pimpl = new Impl{
             nullptr,
@@ -330,12 +331,18 @@ Player::Player(const Player& copy){
             copy.pimpl->index,
             copy.pimpl->player_nr
     };
-    for(int i = 0; i < SIZE; i++)
-        for(int j = 0; j < SIZE; j++)
+    if (copy.pimpl->board != nullptr) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                this->pimpl->board[i][j] = copy.pimpl->board[i][j];
+            }
+        }
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
             this->pimpl->board[i][j] = copy.pimpl->board[i][j];
-    Impl* copyTemp = copy.pimpl;
-    Impl* thisTemp = this->pimpl;
-    while(copyTemp->next) {
+    Impl *copyTemp = copy.pimpl;
+    Impl *thisTemp = this->pimpl;
+    while (copyTemp->next) {
         thisTemp->next = new Impl{
                 nullptr,
                 initialize_board(),
@@ -343,12 +350,13 @@ Player::Player(const Player& copy){
                 copyTemp->player_nr
         };
 
-        for(int i = 0; i < 8; i++)
-            for(int j = 0; j < 8; j++)
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
                 thisTemp->next->board[i][j] = copyTemp->next->board[i][j];
         thisTemp = thisTemp->next;
         copyTemp = copyTemp->next;
     }
+}else this->pimpl->board = nullptr;
     std::cout << "copy constructor ended" << std::endl;
 }
 /**
@@ -540,8 +548,6 @@ void Player::store_board(const std::string& filename, int history_offset) const{
  */
 void Player::init_board(const std::string& filename) const{
     std::cout << "init_board called" << std::endl;
-    if(this->pimpl->next == nullptr)
-        this->pimpl->board = initialize_board();
     Player::piece **initial_board = initialize_board();
     for(int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -553,29 +559,11 @@ void Player::init_board(const std::string& filename) const{
                 initial_board[i][j] = piece::e;
         }
     }
-    Impl* temp = this->pimpl;
-    int lastIndex = this->pimpl->index;
-    while(temp->next) {
-        lastIndex++;
-        temp = temp->next;
-    }
-    temp->next = new Impl{
-            nullptr,
-            initialize_board(),
-            lastIndex+1,
-            this->pimpl->player_nr
-    };
-    temp = temp->next;
-    for(int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            temp->board[i][j] = initial_board[i][j];
-        }
-    }
     std::fstream file;
     file.open(filename, std::fstream::out);
     for(int i = SIZE - 1; i >= 0; i--) {
         for(int j = 0; j < SIZE; j++) {
-            file << to_char(temp->board[i][j]);
+            file << to_char(initial_board[i][j]);
             if(j != SIZE - 1) file << ' ';
         }
         if(i != 0)
@@ -706,7 +694,9 @@ bool Player::valid_move() const{
  */
 void Player::pop(){
     std::cout << "pop called" << std::endl;
-    if(!this->pimpl->board)
+    if(!this->pimpl->board )
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: empty history"};
+    if (!this->pimpl->next && this->pimpl->index == 0)
         throw player_exception{player_exception::index_out_of_bounds, "ERROR: empty history"};
     Impl* temp0 = this->pimpl;
     if (temp0->next == nullptr) {
