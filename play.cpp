@@ -14,60 +14,32 @@ int main(int argc, char **argv){
 
 
     try {
+
         Player p1(1);
-        Player p2(1);
 
+        p1.init_board("board_0.txt");
+       /* Player p2(2);
+        p1.load_board("board_0.txt");
+        p1.move();
+        p1.store_board("board_1.txt");
+        p2.load_board("board_1.txt");
+        p2.move();
+        p2.store_board("board_2.txt");
+        int round =2;
+        while(p1.valid_move() && p2.valid_move() && !p1.wins() && !p2.wins()){
+            p1.load_board("board_" + std::to_string(round) + ".txt");
+            p1.move();
+            p1.store_board("board_" + std::to_string(++round) + ".txt");
+            p2.load_board("board_" + std::to_string(round) + ".txt");
+            p2.move();
+            p2.store_board("board_" + std::to_string(++round) + ".txt");
+        }
 
+        (p1.wins())? cout << "Player 1 wins!" << endl : cout << "Player 2 wins!" << endl;
 
-        Player p4(2);
-        Player p5(2);
-        p5.load_board("./load_test2.txt");
-        p5.init_board("./ciao3.txt");
+        p2.store_board("board_exit.txt",0);
 
-p5.pop();
-        p5.store_board("store_test7.txt" , 0 );
-p5.pop();
-     //   p5.store_board("store_test8.txt" , 0 );
-
-
-
-        p1.init_board("./ciao.txt");
-        p1.init_board("./ciao2.txt");
-        p2.init_board("./ciao.txt");
-        p1.load_board("./load_test.txt");
-        p2.load_board("./ciao.txt");
-        p2.load_board("./ciao.txt");
-        cout<<p2.valid_move();
-        p2.load_board("./load_test2.txt");
-
-        p1.load_board("./load_test2.txt");
-        Player p3(p1);
-        p2=p1;
-        p4.load_board("./load_test.txt");
-
-        p2.load_board("./load_test2.txt");
-
-        p1.store_board("store_test.txt" , 1 );
-
-
-        p4.store_board("store_test.txt" , 0 );
-        p4.move();
-        p4.store_board("store_test2.txt" , 0 );
-
-
-        p4.load_board("./load_test2.txt");
-        cout<<p4.valid_move();
-        cout<<p4.recurrence();
-        p4.pop();
-        p4.load_board("./load_test2.txt");
-        cout<<"ply 2 win?"<<p4.wins(2)<<endl;
-        cout<<"p4 win?"<<p4.wins()<<endl;
-        cout<<"ply 2 lose?"<<p4.loses(2)<<endl;
-        cout<<"p4 lose?"<<p4.loses()<<endl;
-
-        cout<< p4(7,0,0);
-
-
+*/
 
     }
     catch(player_exception& e){
