@@ -42,7 +42,7 @@ Player::piece to_piece(char c){
 /**
  * @brief get the number of piece of a player
  * @param board the game board
- * @param player the player to check [0] = (x V o) [1] = (X V O) 
+ * @param player the player to check [0] = (x V o) [1] = (X V O)
  */
 int get_left (Player::piece** board, Player::piece p[2]){
     int count=0;
@@ -79,7 +79,7 @@ struct Move {
     }
 };
 /**
- * @brief return the corresponding dama of a piece 
+ * @brief return the corresponding dama of a piece
  */
 Player::piece get_dame(Player::piece p) {
     return (p == Player::piece::x) ?  Player::piece::X :  Player::piece::O;
@@ -461,26 +461,26 @@ Player::Player(const Player& copy) {
                 this->pimpl->board[i][j] = copy.pimpl->board[i][j];
             }
         }
-    for (int i = 0; i < SIZE; i++)
-        for (int j = 0; j < SIZE; j++)
-            this->pimpl->board[i][j] = copy.pimpl->board[i][j];
-    Impl *copyTemp = copy.pimpl;
-    Impl *thisTemp = this->pimpl;
-    while (copyTemp->next) {
-        thisTemp->next = new Impl{
-                nullptr,
-                initialize_board(),
-                thisTemp->index + 1,
-                copyTemp->player_nr
-        };
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
+                this->pimpl->board[i][j] = copy.pimpl->board[i][j];
+        Impl *copyTemp = copy.pimpl;
+        Impl *thisTemp = this->pimpl;
+        while (copyTemp->next) {
+            thisTemp->next = new Impl{
+                    nullptr,
+                    initialize_board(),
+                    thisTemp->index + 1,
+                    copyTemp->player_nr
+            };
 
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                thisTemp->next->board[i][j] = copyTemp->next->board[i][j];
-        thisTemp = thisTemp->next;
-        copyTemp = copyTemp->next;
-    }
-}else{
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
+                    thisTemp->next->board[i][j] = copyTemp->next->board[i][j];
+            thisTemp = thisTemp->next;
+            copyTemp = copyTemp->next;
+        }
+    }else{
 
         delete_board(this->pimpl->board);
         this->pimpl->board = nullptr;
