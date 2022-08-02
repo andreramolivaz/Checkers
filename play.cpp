@@ -17,8 +17,8 @@ int main(int argc, char **argv){
 
         Player p1(1);
 
-        p1.init_board("board_0.txt");
-       /* Player p2(2);
+p1.init_board("board_0.txt");
+        Player p2(2);
         p1.load_board("board_0.txt");
         p1.move();
         p1.store_board("board_1.txt");
@@ -26,7 +26,7 @@ int main(int argc, char **argv){
         p2.move();
         p2.store_board("board_2.txt");
         int round =2;
-        while(p1.valid_move() && p2.valid_move() && !p1.wins() && !p2.wins()){
+        while(p1.valid_move() && p2.valid_move() && !p1.wins() && !p2.wins() ){
             p1.load_board("board_" + std::to_string(round) + ".txt");
             p1.move();
             p1.store_board("board_" + std::to_string(++round) + ".txt");
@@ -39,7 +39,7 @@ int main(int argc, char **argv){
 
         p2.store_board("board_exit.txt",0);
 
-*/
+
 
     }
     catch(player_exception& e){

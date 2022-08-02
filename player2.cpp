@@ -105,109 +105,220 @@ Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
     Player::piece enemy_pawn = next_player(p);
     Player::piece aux_pawn = p;
     int index = 0;
+
     for(int j = 0; j < 8; j++) {
+
         for(int k = 0; k < 8; k++) {
             now_x = j;
             now_y = k;
             aux_pawn = b[now_x][now_y];
-            if(aux_pawn == p) {
-                future_x = now_x + direction;
-                future_y = now_y - direction;
-                if((future_x >= 0) && (future_y >= 0) && (future_y < SIZE) && (future_x < SIZE)) {
-                    aux_pawn = b[future_x][future_y];
-                    if(aux_pawn == Player::piece::e) {
-                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
-                        index++;
-                    }else if(aux_pawn == enemy_pawn) {
-                        if(((future_x + direction) >= 0) && ((future_y - direction) >= 0) && ((future_x + direction) < SIZE)  && ((future_y - direction) < SIZE)) {
-                           aux_pawn= b[future_x + direction][future_y - direction];
-                            if((aux_pawn == Player::piece::e)) {
-                                possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y - direction), future_x, future_y, p);
+
+            if( p == Player::piece::x){
+                switch (aux_pawn){
+                    case Player::piece::x:
+                        future_x = now_x + direction;
+                        future_y = now_y - direction;
+                        if((future_x >= 0) && (future_y >= 0) && (future_y < SIZE) && (future_x < SIZE)) {
+                            aux_pawn = b[future_x][future_y];
+                            if(aux_pawn == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
                                 index++;
+                            }else if(aux_pawn == enemy_pawn) {
+                                if(((future_x + direction) >= 0) && ((future_y - direction) >= 0) && ((future_x + direction) < SIZE)  && ((future_y - direction) < SIZE)) {
+                                    aux_pawn= b[future_x + direction][future_y - direction];
+                                    if((aux_pawn == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y - direction), future_x, future_y, p);
+                                        index++;
+                                    }
+                                }
                             }
                         }
-                    }
+                        future_y = now_y + direction;
+                        future_x = now_x + direction;
+                        if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
+                            aux_pawn = b[future_x][future_y];
+                            if(aux_pawn == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
+                                index++;
+                            }else if(aux_pawn == enemy_pawn) {
+                                if(((future_x + direction) >= 0) && ((future_y + direction) >= 0) && ((future_x + direction) < SIZE) &&  ((future_y + direction) < SIZE)) {
+                                    aux_pawn = b[future_x + direction][future_y + direction];
+                                    if((aux_pawn == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y + direction), future_x, future_y, p);
+                                        index++;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case Player::piece::X:
+                        future_y = now_y - 1;
+                        future_x = now_x + 1;
+                        if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
+                            aux_pawn = b[future_x][future_y];
+                            if(aux_pawn == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
+                                index++;
+                            }else if((aux_pawn == enemy_pawn) || (aux_pawn == enemy_dame)) {
+                                if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
+                                    if((b[future_x + 1][future_y - 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y - 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
+                            }
+                        }
+                        future_x = now_x + 1;
+                        future_y = now_y + 1;
+                        if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                            if(b[future_x][future_y] == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
+                                index++;
+                            }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                                if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
+                                    if((b[future_x + 1][future_y + 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y + 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
+                            }
+                        }
+                        future_x = now_x - 1;
+                        future_y = now_y - 1;
+                        if((future_x >= 0) && (future_x < 8) && (future_y >= 0) && (future_y < 8)) {
+                            if(b[future_x][future_y] == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
+                                index++;
+                            }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                                if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
+                                    if((b[future_x - 1][future_y - 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y - 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
+                            }
+                        }
+                        future_x = now_x - 1;
+                        future_y = now_y + 1;
+                        if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                            if(b[future_x][future_y] == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
+                                index++;
+                            }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                                if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
+                                    if((b[future_x - 1][future_y + 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y + 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
+                            }
+                        }
+                        break;
                 }
-                future_y = now_y + direction;
-                future_x = now_x + direction;
-                if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
-                    aux_pawn = b[future_x][future_y];
-                    if(aux_pawn == Player::piece::e) {
-                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
-                        index++;
-                    }else if(aux_pawn == enemy_pawn) {
-                        if(((future_x + direction) >= 0) && ((future_y + direction) >= 0) && ((future_x + direction) < SIZE) &&  ((future_y + direction) < SIZE)) {
-                            aux_pawn = b[future_x + direction][future_y + direction];
-                            if((aux_pawn == Player::piece::e)) {
-                                possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y + direction), future_x, future_y, p);
+            }else if (p == Player::piece::o){
+                switch (aux_pawn){
+                    case Player::piece::o:
+                        future_x = now_x + direction;
+                        future_y = now_y - direction;
+                        if((future_x >= 0) && (future_y >= 0) && (future_y < SIZE) && (future_x < SIZE)) {
+                            aux_pawn = b[future_x][future_y];
+                            if(aux_pawn == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
                                 index++;
+                            }else if(aux_pawn == enemy_pawn) {
+                                if(((future_x + direction) >= 0) && ((future_y - direction) >= 0) && ((future_x + direction) < SIZE)  && ((future_y - direction) < SIZE)) {
+                                    aux_pawn= b[future_x + direction][future_y - direction];
+                                    if((aux_pawn == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y - direction), future_x, future_y, p);
+                                        index++;
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-            }else if(b[now_x][now_y] == p_dame) {
-                future_y = now_y - 1;
-                future_x = now_x + 1;
-                if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
-                    aux_pawn = b[future_x][future_y];
-                    if(aux_pawn == Player::piece::e) {
-                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
-                        index++;
-                    }else if((aux_pawn == enemy_pawn) || (aux_pawn == enemy_dame)) {
-                        if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
-                            if((b[future_x + 1][future_y - 1] == Player::piece::e)) {
-                                possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y - 1), future_x, future_y, p_dame);
+                        future_y = now_y + direction;
+                        future_x = now_x + direction;
+                        if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
+                            aux_pawn = b[future_x][future_y];
+                            if(aux_pawn == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p);
                                 index++;
+                            }else if(aux_pawn == enemy_pawn) {
+                                if(((future_x + direction) >= 0) && ((future_y + direction) >= 0) && ((future_x + direction) < SIZE) &&  ((future_y + direction) < SIZE)) {
+                                    aux_pawn = b[future_x + direction][future_y + direction];
+                                    if((aux_pawn == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + direction), (future_y + direction), future_x, future_y, p);
+                                        index++;
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                future_x = now_x + 1;
-                future_y = now_y + 1;
-                if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
-                    if(b[future_x][future_y] == Player::piece::e) {
-                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
-                        index++;
-                    }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
-                        if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
-                            if((b[future_x + 1][future_y + 1] == Player::piece::e)) {
-                                possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y + 1), future_x, future_y, p_dame);
+                        break;
+                    case Player::piece::O:
+                        future_y = now_y - 1;
+                        future_x = now_x + 1;
+                        if((future_x >= 0) && (future_y >= 0) && (future_x < SIZE) &&  (future_y < SIZE)) {
+                            aux_pawn = b[future_x][future_y];
+                            if(aux_pawn == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                                 index++;
+                            }else if((aux_pawn == enemy_pawn) || (aux_pawn == enemy_dame)) {
+                                if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
+                                    if((b[future_x + 1][future_y - 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y - 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                future_x = now_x - 1;
-                future_y = now_y - 1;
-                if((future_x >= 0) && (future_x < 8) && (future_y >= 0) && (future_y < 8)) {
-                    if(b[future_x][future_y] == Player::piece::e) {
-                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
-                        index++;
-                    }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
-                        if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
-                            if((b[future_x - 1][future_y - 1] == Player::piece::e)) {
-                                possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y - 1), future_x, future_y, p_dame);
+                        future_x = now_x + 1;
+                        future_y = now_y + 1;
+                        if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                            if(b[future_x][future_y] == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                                 index++;
+                            }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                                if(((future_x + 1) >= 0) && ((future_x + 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
+                                    if((b[future_x + 1][future_y + 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x + 1), (future_y + 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                future_x = now_x - 1;
-                future_y = now_y + 1;
-                if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
-                    if(b[future_x][future_y] == Player::piece::e) {
-                        possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
-                        index++;
-                    }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
-                        if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
-                            if((b[future_x - 1][future_y + 1] == Player::piece::e)) {
-                                possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y + 1), future_x, future_y, p_dame);
+                        future_x = now_x - 1;
+                        future_y = now_y - 1;
+                        if((future_x >= 0) && (future_x < 8) && (future_y >= 0) && (future_y < 8)) {
+                            if(b[future_x][future_y] == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
                                 index++;
+                            }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                                if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y - 1) >= 0) && ((future_y - 1) < SIZE)) {
+                                    if((b[future_x - 1][future_y - 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y - 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
                             }
                         }
-                    }
+                        future_x = now_x - 1;
+                        future_y = now_y + 1;
+                        if((future_x >= 0) && (future_x < SIZE) && (future_y >= 0) && (future_y < SIZE)) {
+                            if(b[future_x][future_y] == Player::piece::e) {
+                                possible_moves[index].create_move(now_x, now_y, future_x, future_y, 0, 0, p_dame);
+                                index++;
+                            }else if((b[future_x][future_y] == enemy_pawn) || (b[future_x][future_y] == enemy_dame)) {
+                                if(((future_x - 1) >= 0) && ((future_x - 1) < SIZE) && ((future_y + 1) >= 0) && ((future_y + 1) < SIZE)) {
+                                    if((b[future_x - 1][future_y + 1] == Player::piece::e)) {
+                                        possible_moves[index].create_move(now_x, now_y, (future_x - 1), (future_y + 1), future_x, future_y, p_dame);
+                                        index++;
+                                    }
+                                }
+                            }
+                        }
+                        break;
                 }
             }
+
         }
     }
     return possible_moves;
@@ -219,15 +330,15 @@ Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
  */
 Move get_random_move(Player::piece** board, Player::piece player) {
     Move final_move;
-    std::srand(time(NULL));
     int direction=0;
     (player == Player::piece::x)? direction = 1 : direction = -1;
     Move* moves = get_all_moves(direction, board, player);
     int size = 0, random_index = 0;
     for(int i = 0; ((i < 40) && (moves[i].moving != Player::piece::e)); i++) size++;
     if(size != 0) {
-        std::srand(time(NULL));
+        srand(time(NULL)*time(NULL)/rand());
         random_index = (std::rand() % size);
+        cout<<random_index<<endl;
         final_move = moves[random_index];
     }
     delete[] moves;
@@ -593,8 +704,7 @@ void Player::move(){
             temp_board[i][j]=temp->board[i][j];
     Move best_move;
     Player::piece player;
-    if(temp->player_nr == 1) player = x;
-    else player = o;
+    (temp->player_nr == 1) ? player = x : player = o;
     best_move = get_random_move(temp_board, player);
     for (int i=0; i<SIZE ; i++)
         for (int j=0; j<SIZE; j++)
@@ -728,7 +838,6 @@ bool Player::wins(int player_nr) const {
     }
     if(last_index+1==0 || ((player_nr != 1) && (player_nr != 2)))
         throw player_exception{player_exception::index_out_of_bounds, "ERROR: invalid player number or empty history"};
-    bool res;
     Player::piece player[2];
     if(player_nr == 2){
         player[0] = x;
@@ -738,8 +847,7 @@ bool Player::wins(int player_nr) const {
         player[0] = o;
         player[1]=O;
     }
-    if(get_left(temp->board, player)==0) return true;
-    else return false;
+    return (get_left(temp->board, player)==0) ?  true : false;
 }
 /**
  * @brief check if the game is wan by player this
