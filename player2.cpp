@@ -426,7 +426,7 @@ struct Player::Impl{
  */
 Player::Player(int player_nr) {
     if (player_nr != 1 && player_nr != 2)
-        throw player_exception{player_exception::index_out_of_bounds, "ERROR: The player can only be 0 or 1"};
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: The player can only be 2 or 1"};
     pimpl = new Impl{nullptr, nullptr, 0, player_nr};
 }
 /**
@@ -448,6 +448,7 @@ Player::~Player(){
  */
 Player::Player(const Player& copy) {
     std::cout << "copy constructor called" << std::endl;
+
     this->pimpl = new Impl{
             nullptr,
             initialize_board(),
@@ -479,7 +480,11 @@ Player::Player(const Player& copy) {
         thisTemp = thisTemp->next;
         copyTemp = copyTemp->next;
     }
-}else this->pimpl->board = nullptr;
+}else{
+
+        delete_board(this->pimpl->board);
+        this->pimpl->board = nullptr;
+    }
     std::cout << "copy constructor ended" << std::endl;
 }
 /**
