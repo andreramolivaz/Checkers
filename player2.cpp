@@ -115,6 +115,12 @@ Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
 
             if( p == Player::piece::x){
                 switch (aux_pawn){
+                    case Player::piece::o:
+                        break;
+                    case Player::piece::O:
+                        break;
+                    case Player::piece::e:
+                        break;
                     case Player::piece::x:
                         future_x = now_x + direction;
                         future_y = now_y - direction;
@@ -217,6 +223,12 @@ Move* get_all_moves(int direction, Player::piece** const b, Player::piece p) {
                 }
             }else if (p == Player::piece::o){
                 switch (aux_pawn){
+                    case Player::piece::x:
+                        break;
+                    case Player::piece::X:
+                        break;
+                    case Player::piece::e:
+                        break;
                     case Player::piece::o:
                         future_x = now_x + direction;
                         future_y = now_y - direction;
