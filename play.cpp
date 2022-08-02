@@ -15,7 +15,10 @@ int main(int argc, char **argv){
 
     try {
 
+
+
         Player p1(1);
+
 
 p1.init_board("board_0.txt");
         Player p2(2);

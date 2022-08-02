@@ -42,7 +42,7 @@ Player::piece to_piece(char c){
 /**
  * @brief get the number of piece of a player
  * @param board the game board
- * @param player the player to check [0] = (x V o) [1] = (X V O) 
+ * @param player the player to check [0] = (x V o) [1] = (X V O)
  */
 int get_left (Player::piece** board, Player::piece p[2]){
     int count=0;
@@ -79,7 +79,7 @@ struct Move {
     }
 };
 /**
- * @brief return the corresponding dama of a piece 
+ * @brief return the corresponding dama of a piece
  */
 Player::piece get_dame(Player::piece p) {
     return (p == Player::piece::x) ?  Player::piece::X :  Player::piece::O;
@@ -350,7 +350,7 @@ Move get_random_move(Player::piece** board, Player::piece player) {
     if(size != 0) {
         srand(time(NULL)*time(NULL)/rand());
         random_index = (std::rand() % size);
-        cout<<random_index<<endl;
+       // cout<<random_index<<endl;
         final_move = moves[random_index];
     }
     delete[] moves;
@@ -426,14 +426,13 @@ struct Player::Impl{
  */
 Player::Player(int player_nr) {
     if (player_nr != 1 && player_nr != 2)
-        throw player_exception{player_exception::index_out_of_bounds, "ERROR: The player can only be 0 or 1"};
+        throw player_exception{player_exception::index_out_of_bounds, "ERROR: The player can only be 2 or 1"};
     pimpl = new Impl{nullptr, nullptr, 0, player_nr};
 }
 /**
  * @brief Destructor of the player
  */
 Player::~Player(){
-    std::cout << "destructor called" << std::endl;
     while(pimpl != nullptr){
         Impl* temp = pimpl;
         pimpl = pimpl->next;
@@ -441,13 +440,12 @@ Player::~Player(){
         delete temp;
     }
     delete pimpl;
-    std::cout << "destructor ended" << std::endl;
 }
 /**
  * @brief copy constructor of the player
  */
 Player::Player(const Player& copy) {
-    std::cout << "copy constructor called" << std::endl;
+
     this->pimpl = new Impl{
             nullptr,
             initialize_board(),
@@ -460,33 +458,35 @@ Player::Player(const Player& copy) {
                 this->pimpl->board[i][j] = copy.pimpl->board[i][j];
             }
         }
-    for (int i = 0; i < SIZE; i++)
-        for (int j = 0; j < SIZE; j++)
-            this->pimpl->board[i][j] = copy.pimpl->board[i][j];
-    Impl *copyTemp = copy.pimpl;
-    Impl *thisTemp = this->pimpl;
-    while (copyTemp->next) {
-        thisTemp->next = new Impl{
-                nullptr,
-                initialize_board(),
-                thisTemp->index + 1,
-                copyTemp->player_nr
-        };
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
+                this->pimpl->board[i][j] = copy.pimpl->board[i][j];
+        Impl *copyTemp = copy.pimpl;
+        Impl *thisTemp = this->pimpl;
+        while (copyTemp->next) {
+            thisTemp->next = new Impl{
+                    nullptr,
+                    initialize_board(),
+                    thisTemp->index + 1,
+                    copyTemp->player_nr
+            };
 
-        for (int i = 0; i < 8; i++)
-            for (int j = 0; j < 8; j++)
-                thisTemp->next->board[i][j] = copyTemp->next->board[i][j];
-        thisTemp = thisTemp->next;
-        copyTemp = copyTemp->next;
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 8; j++)
+                    thisTemp->next->board[i][j] = copyTemp->next->board[i][j];
+            thisTemp = thisTemp->next;
+            copyTemp = copyTemp->next;
+        }
+    }else{
+
+        delete_board(this->pimpl->board);
+        this->pimpl->board = nullptr;
     }
-}else this->pimpl->board = nullptr;
-    std::cout << "copy constructor ended" << std::endl;
 }
 /**
  * @brief copy assignment operator of the player
  */
 Player& Player::operator=(const Player& copy) {
-    std::cout << "operator= called" << std::endl;
     if(this->pimpl != copy.pimpl) {
         delete pimpl;
         this->pimpl = new Impl{
@@ -514,14 +514,12 @@ Player& Player::operator=(const Player& copy) {
             copyTemp = copyTemp->next;
         }
     }
-    std::cout << "operator= ended" << std::endl;
     return *this;
 }
 /**
  * @brief operator () to return a specific piece given it's coordinates
  */
 Player::piece Player::operator()(int r, int c, int history_offset) const {
-    std::cout << "operator() called" << std::endl;
     Impl* temp = this->pimpl;
     int last_index=-1;
     while (temp->next) {
@@ -536,7 +534,6 @@ Player::piece Player::operator()(int r, int c, int history_offset) const {
         temp = temp->next;
     }
 
-    std::cout << "operator() ended" << std::endl;
     return (temp->board[r][c]);
 }
 /**
@@ -544,7 +541,6 @@ Player::piece Player::operator()(int r, int c, int history_offset) const {
  * @param filename the filename to load from
  */
 void Player::load_board(const std::string& filename){
-    std::cout << "load board called" << std::endl;
     if(this->pimpl->next == nullptr)
         this->pimpl->board = initialize_board();
     Impl* temp = this->pimpl;
@@ -586,13 +582,13 @@ void Player::load_board(const std::string& filename){
         }
         if(c != '\n'){
             board[i][j] = to_piece(c);
-            std::cout << to_char(board[i][j]);
+            //std::cout << to_char(board[i][j]);
             j++;
             readCharacters++;
             if(j == SIZE){
                 j = 0;
                 i--;
-                std::cout << std::endl;
+                //std::cout << std::endl;
             }
         }
         if (file.get(c) && c != ' ' && c != '\n' ){
@@ -628,7 +624,6 @@ void Player::load_board(const std::string& filename){
         }
     }
     delete_board(board);
-    std::cout << "load board ended" << std::endl;
 }
 /**
  * @brief store the board to a file given the offset
@@ -636,7 +631,6 @@ void Player::load_board(const std::string& filename){
  * @param history_offset the 'index' of the history
  */
 void Player::store_board(const std::string& filename, int history_offset) const{
-    std::cout << "store_board called" << std::endl;
     Impl* temp = this->pimpl;
     int last_index=-1;
     while (temp->next) {
@@ -663,14 +657,12 @@ void Player::store_board(const std::string& filename, int history_offset) const{
     }
 
     file.close();
-    std::cout << "store_board ended" << std::endl;
 }
 /**
  * @brief initialize and store an new board
  * @param filename the filename to store to
  */
 void Player::init_board(const std::string& filename) const{
-    std::cout << "init_board called" << std::endl;
     Player::piece **initial_board = initialize_board();
     for(int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -694,13 +686,11 @@ void Player::init_board(const std::string& filename) const{
     }
     file.close();
     delete_board(initial_board);
-    std::cout << "init_board ended" << std::endl;
 }
 /**
  * @brief make a move on the board
  */
 void Player::move(){
-    std::cout << "move called" << std::endl;
     Impl* temp = this->pimpl;
     int last_index=-1;
     while (temp->next) {
@@ -741,13 +731,11 @@ void Player::move(){
         }
     }
     delete_board(temp_board);
-    std::cout << "move ended" << std::endl;
 }
 /**
  * @brief check if the move is valid
  */
 bool Player::valid_move() const{
-    std::cout << "valid_move called" << std::endl;
     bool res = false;
     Impl* temp = this->pimpl;
     int last_index=-1;
@@ -784,7 +772,6 @@ bool Player::valid_move() const{
         delete_board(before);
         delete_board(after);
         delete_board(copy);
-        std::cout << "valid_move ended" << std::endl;
         return false;
     }
     moves_x = get_all_moves(1, before, Player::piece::x);
@@ -808,14 +795,12 @@ bool Player::valid_move() const{
     delete_board(copy);
     delete[] moves_x;
     delete[] moves_o;
-    std::cout << "valid_move ended" << std::endl;
     return res;
 }
 /**
  * @brief delete the last board in the history
  */
 void Player::pop(){
-    std::cout << "pop called" << std::endl;
     if(!this->pimpl->board )
         throw player_exception{player_exception::index_out_of_bounds, "ERROR: empty history"};
     if (!this->pimpl->next && this->pimpl->index == 0)
@@ -824,7 +809,6 @@ void Player::pop(){
     if (temp0->next == nullptr) {
         delete_board(temp0->board);
         delete temp0;
-        std::cout << "pop ended" << std::endl;
         pimpl->next= nullptr;
         pimpl->board=nullptr;
         return;
@@ -835,7 +819,6 @@ void Player::pop(){
     temp1->next= nullptr;
     delete_board(temp0->board);
     delete temp0;
-    std::cout << "pop ended" << std::endl;
 }
 /**
  * @brief check if player_nr is the winner
@@ -935,7 +918,6 @@ bool Player::loses() const {
  * @brief give the number of recurrence of the last board in the history
  */
 int Player::recurrence() const{
-    std::cout << "recurrence called" << std::endl;
     if(!this->pimpl->board)
         throw player_exception{player_exception::index_out_of_bounds, "ERROR: empty history"};
     int count=0;
@@ -948,7 +930,6 @@ int Player::recurrence() const{
         if(are_board_equals(board, temp->board)) count++;
         temp=temp->next;
     }
-    std::cout << "recurrence ended" << std::endl;
     return count+1;
 }
 
