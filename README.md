@@ -46,12 +46,12 @@ To play Checkers, follow these steps:
 
 ## Requirements
 
-- `#include <iostream>` The iostream library provides basic input/output functionality, including the standard input and output streams cin, cout, and cerr.
-- `#include <fstream>` The fstream library provides support for reading and writing to files using the ifstream and ofstream classes.
-- `#include <string>` The string library provides a string class that can be used to store and manipulate strings.
-- `#include <sstream>` The sstream library provides support for stringstream, which can be used to perform input and output operations on strings.
-- `#include <cassert>` The cassert library provides the assert macro, which can be used to perform debugging checks in the code, such as checking if a pointer is null before dereferencing it.
-- `#include <thread>` The thread library provides support for creating and managing threads, which are independent sequences of execution within a single program.
+- `#include <iostream>` for basic input/output functionality, including the standard input and output streams cin, cout, and cerr.
+- `#include <fstream>` for support for reading and writing to files using the ifstream and ofstream classes.
+- `#include <string>` for string class that can be used to store and manipulate strings.
+- `#include <sstream>` for support for stringstream, which is used to perform input and output operations on strings.
+- `#include <cassert>` used to perform debugging checks in the code, such as checking if a pointer is null before dereferencing it.
+- `#include <thread>` to support for creating and managing threads, which are independent sequences of execution within a single program.
 
 
 ## Project Structure
