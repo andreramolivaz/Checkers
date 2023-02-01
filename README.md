@@ -38,7 +38,7 @@ To play Checkers, follow these steps:
  <table>
    <tr>
 <td><img src="http://vdapoi.altervista.org/ezgif.com-gif-maker-6.gif" width="250" height="200" /><br>
-  <em>singleplayer</em></td> 
+</td> 
    </tr>
   </table>
 </div>
