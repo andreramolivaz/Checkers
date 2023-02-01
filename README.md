@@ -30,7 +30,7 @@ At each moment of the game, three executables are running: two binaries compiled
 To play Checkers, follow these steps:
 
 1. Clone or download this repository
-2. Compile the source code with a C compiler using the [CMakeLists.txt file](https://github.com/andreramolivaz/Checkers/blob/77c635ec66a2123d45b7b4e445b28d11db4f1f44/CMakeLists.txt)
+2. Compile the source code with a C compiler using the [CMakeLists.txt file](https://github.com/andreramolivaz/Checkers/blob/77c635ec66a2123d45b7b4e445b28d11db4f1f44/CMakeLists.txt) using the default flag of `g++ 9.4.0`, you can add `-Ofast` to improve execution time. 
 
 
 
