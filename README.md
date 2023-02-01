@@ -23,7 +23,7 @@ At each moment of the game, three executables are running: two binaries compiled
 - Player1 loads "board_1.txt", makes a move, and saves the updated chessboard in "board_2.txt".
 - Player2 loads "board_2.txt", makes a move, and saves the updated chessboard in "board_3.txt".
 - The verifier loads "board_3.txt" and checks the legality of the moves made by the players.
-T- he process repeats until one player wins or the game is a draw.
+- The process repeats until one player wins or the game is a draw.
 
 ## Getting Started
 
