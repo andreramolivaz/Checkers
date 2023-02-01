@@ -356,6 +356,70 @@ Move get_random_move(Player::piece** board, Player::piece player) {
     delete[] moves;
     return final_move;
 }
+
+
+/*int minimax(Player::piece** position, int depth, Player::piece max_player, Player::piece next, Move& move_return, int alpha, int beta) {
+    if(depth == 0)
+        return evaluate(position, next_player(next));
+
+    if(max_player == next) {
+        int max_evaluation = -1000;
+        Player::piece** p = create_matrix();
+        copy_board(p, position);
+        Move* moves = get_all_moves(p, max_player, get_direction(max_player));
+        Move best;
+        for(int i = 0; ((i < MAX_MOVES) && (moves[i].piece_moving != Player::piece::e)); i++) {
+            copy_board(p, position);
+
+            int evaluation = minimax(create_board(p, moves[i]), (depth - 1), max_player, next_player(max_player), best, alpha, beta);
+            if(evaluation > max_evaluation) {
+                max_evaluation = evaluation;
+                best = moves[i];
+
+                alpha = std::max(alpha, max_evaluation);
+                if (beta <= alpha)
+                    break;
+            }
+        }
+
+        move_return = best;
+
+        delete_matrix(p);
+        delete[] moves;
+
+        return max_evaluation;
+    }
+    else {
+        int min_evaluation = 1000;
+        Player::piece** p = create_matrix();
+        copy_board(p, position);
+        Move* moves = get_all_moves(p, next, get_direction(next));
+        Move best;
+        for(int i = 0; ((i < MAX_MOVES) && (moves[i].piece_moving != Player::piece::e)); i++) {
+            copy_board(p, position);
+
+            int evaluation = minimax(create_board(p, moves[i]), (depth - 1), max_player, max_player, best, alpha, beta);
+            if(evaluation < min_evaluation) {
+                min_evaluation = evaluation;
+
+                beta = std::min(beta, min_evaluation);
+                if (beta <= alpha)
+                    break;
+            }
+        }
+
+        delete_matrix(p);
+        delete[] moves;
+
+        return min_evaluation;
+    }
+}
+
+Move get_best_move(Player::piece** board, Player::piece max) {
+    Move best;
+    minimax(board, 5, max, max, best, -1000, 1000);
+    return best;
+}*/
 /**
  * @brief compare two boards
  * @param m1 the first board
