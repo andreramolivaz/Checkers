@@ -15,7 +15,7 @@ The project is about defining a class for the checkers game (with slightly simpl
 
 ## Gameplay
 
-The code can play against itself using the [minimax AI algorithm](https://github.com/andreramolivaz/Checkers/blob/77c635ec66a2123d45b7b4e445b28d11db4f1f44/player2.cpp#L361)/[random](https://github.com/andreramolivaz/Checkers/blob/4cecd190a7c04a2e5fb6e03f41c980c6e5b56b9b/player2.cpp#L343) move or against other code that implements different strategies against each other in a tournament. The class Player is implemented whose declaration is contained in the player.hpp header.
+The code can play against itself using the [random](https://github.com/andreramolivaz/Checkers/blob/4cecd190a7c04a2e5fb6e03f41c980c6e5b56b9b/player2.cpp#L343) move or against other code that implements different strategies against each other in a tournament. The class Player is implemented whose declaration is contained in the player.hpp header.
 
 ### A game will take place as follows:
 At each moment of the game, three executables are running: two binaries compiled from "play.cpp" with your players (player1 and player2 - the turn is assigned randomly by us), and the binary compiled from "verify.cpp" (the verifier, containing our correct implementation of Player).
