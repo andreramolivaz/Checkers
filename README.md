@@ -2,6 +2,10 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/andreramolivaz/checkers/badge)](https://www.codefactor.io/repository/github/andreramolivaz/checkers)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/38659fff386e468a87e0e341f01cd543)](https://app.codacy.com/gh/andreramolivaz/Checkers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+<a href="https://scan.coverity.com/projects/andreramolivaz-checkers">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/28729/badge.svg"/>
+</a>
 
 The project is about defining a class for the checkers game (with slightly simplified rules). The game is between two players: player1 (represented by x) and player2 (represented by o). The game takes place on an 8x8 chessboard. At any moment, pieces are only on alternate cells. Pieces on the chessboard are of two types:
 - "Pawn": These are the pieces initially available to each player (12 pieces per player) o/x
