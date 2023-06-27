@@ -1,7 +1,7 @@
 # Checkers
 
 
-[![docs](https://img.shields.io/badge/docs-website-blue?style=plastic&link=https://andreramolivaz.github.io/CT0540-graph/)](https://andreramolivaz.github.io/Checkers-documentation/)
+[![docs](https://img.shields.io/badge/docs-website-blue?style=flat&link=https://andreramolivaz.github.io/CT0540-graph/)](https://andreramolivaz.github.io/Checkers-documentation/)
 [![CodeFactor](https://www.codefactor.io/repository/github/andreramolivaz/checkers/badge)](https://www.codefactor.io/repository/github/andreramolivaz/checkers)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/38659fff386e468a87e0e341f01cd543)](https://app.codacy.com/gh/andreramolivaz/Checkers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 <a href="https://scan.coverity.com/projects/andreramolivaz-checkers">
