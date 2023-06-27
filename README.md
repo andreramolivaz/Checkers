@@ -1,5 +1,7 @@
 # Checkers
 
+[![CodeFactor](https://www.codefactor.io/repository/github/andreramolivaz/checkers/badge)](https://www.codefactor.io/repository/github/andreramolivaz/checkers)
+
 The project is about defining a class for the checkers game (with slightly simplified rules). The game is between two players: player1 (represented by x) and player2 (represented by o). The game takes place on an 8x8 chessboard. At any moment, pieces are only on alternate cells. Pieces on the chessboard are of two types:
 - "Pawn": These are the pieces initially available to each player (12 pieces per player) o/x
 - "Queen": These are pieces with special moves. When a player's pawn reaches the opposite row (row 7 for player1 or row 0 for player2), it automatically becomes a Queen. O/X
